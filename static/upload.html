@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Image</title>
+    <link rel="icon" href="/static/pictures/favicon.ico" type="image/x-icon">
+    <script src="scripts.js"></script>
+    <link href="/static/styles.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="upload-body">
+    <header style="text-align: center;">
+        <h1>Upload Photos</h1>
+        <h2>Upload selfies, memes, or any fun pictures here.</h2>
+    </header>
+    <div class="navigation-links" style="margin-top: 50px; margin-bottom: 50px;">
+        <a style="color: #0060FF;">Upload</a>
+        <a href="#link2" style="color: #ADC0F8; cursor: pointer;" onclick="window.location.href='/images'">Images</a>
+    </div>
+    <div style="width: 540px;">
+        <div id="drop-area" style="margin-bottom: 30px;">
+            <img src="pictures/upload-cloud.png" alt="Upload Cloud">
+            <p id="error-text" class="main-info">Select a file or drag and drop here</p>
+            <p class="detailed-info">Only support .jpg, .png and gif.<br>Maximum file size is 5MB </p>
+        </div>
+
+        <form onsubmit="handleSubmit(event)" enctype="multipart/form-data">
+            <button type="button" style="width: 100%;" onclick="document.getElementById('file-input').click()">BROWSE YOUR FILE</button>
+            <input type="file" name="file" id="file-input" accept=".jpg,.jpeg,.png,.gif" required>
+        </form>
+
+        <div class="label" style="margin-top: 40px; margin-bottom: 10px;">
+            <label>Current Upload</label>
+        </div>
+        <div class="input-with-button">
+            <input type="text" id="image-link" placeholder="https://" class="text-input">
+            <button class="inner-button">COPY</button>
+        </div>
+    </div>
+</body>
+</html>

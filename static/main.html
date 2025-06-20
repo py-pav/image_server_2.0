@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Image Storage Service</title>
+    <link rel="icon" href="/static/pictures/favicon.ico" type="image/x-icon">
+    <link href="/static/styles.css" rel="stylesheet" type="text/css" />
+    <script>
+        // Случайный выбор изображения из папки pictures
+        document.addEventListener('DOMContentLoaded', function() {
+            const imgElement = document.getElementById('random-image');
+            const randomNumber = Math.floor(Math.random() * 5) + 1;
+            const imagePath = `/static/pictures/pictures_${randomNumber}.png`;
+            imgElement.src = imagePath;
+        });
+    </script>
+</head>
+<body class="main-body">
+    <header style="text-align: center; margin-top: 20px;">
+        <h1>Upload Photos</h1>
+        <h2>Upload selfies, memes, or any fun pictures here.</h2>
+    </header>
+    <button type="button" style="margin-top: 50px;" onclick="window.location.href='/static/upload.html'">TAIL-ENT SHOWCASE</button>
+    <div class="image-container" style="margin-top: 40px;">
+        <img id="random-image" src="" alt="Random image">
+    </div>
+</body>
+</html>

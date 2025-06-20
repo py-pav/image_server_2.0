@@ -1,0 +1,206 @@
+body {
+  background-color: #151515;        /* Основной цвет фона страницы */
+  font-family: 'Inter', sans-serif; /* Шрифт для всей страницы */
+  color: #FFFFFF;                   /* Цвет текста по умолчанию */
+}
+
+.main-body,
+.upload-body{
+  font-family: 'Inter', sans-serif; /* Шрифт */
+  place-items: center;              /* Центрирование содержимого */
+}
+
+.main-body {
+  background-color: #151515;      /* Темный фон */
+  color: #FFFFFF;                 /* Белый текст */
+}
+
+.upload-body {
+  background-color: #F2F5FF;       /* Светло-голубой фон */
+  color: #0B0B0B;                  /* Почти черный текст */
+}
+
+h1,
+h2 {
+  margin: 0;                     /* Убирает внешние отступы */
+  letter-spacing: -0.4px;        /* Уменьшает расстояние между буквами */
+}
+
+h1 {
+  font-size: 16px;               /* Размер шрифта */
+  font-weight: 700;              /* Жирность (bold) */
+  line-height: 14px;             /* Высота строки */
+  padding: 15px 0;               /* Внутренние отступы: 15px сверху/снизу */
+}
+
+h2 {
+  font-size: 14px;               /* Размер шрифта */
+  font-weight: 400;              /* Нормальная жирность */
+  line-height: 1.5px;            /* Минимальная высота строки */
+  padding: 0px 0;                /* Без внутренних отступов */
+}
+
+.label {
+  font-size: 16px;               /* Размер шрифта */
+  font-weight: 700;              /* Жирность (bold) */
+  display: block;                /* Блочное отображение */
+}
+
+button {
+  width: 160px;                  /* Фиксированная ширина */
+  height: 40px;                  /* Фиксированная высота */
+  background-color: #0060FF;     /* Синий цвет фона */
+  color: #FFFFFF;                /* Белый текст */
+  border: none;                  /* Убирает границу */
+  border-radius: 7px;            /* Закругление углов */
+  font-size: 12px;               /* Размер текста */
+  font-weight: 600;              /* Полужирный текст */
+  text-align: center;            /* Выравнивание текста по центру */
+  cursor: pointer;               /* Курсор-указатель при наведении */
+  transition: background 0.2s, transform 0.1s; /* Плавное изменение цвета */
+}
+
+button:hover {
+  background: #3A86FF;           /* Более светлый синий при наведении */
+}
+
+button:active {
+  background: #0052D9;           /* Темнее исходного при нажатии */
+}
+
+.navigation-links {
+  display: flex;                 /* Горизонтальное расположение */
+  gap: 15px;                     /* Расстояние между ссылками */
+}
+
+.navigation-links a {
+  text-decoration: none;         /* Убирает подчеркивание ссылки */
+  font-size: 20px;               /* Размер шрифта 20 пикселей */
+  font-weight: 700;              /* Жирное начертание шрифта */
+}
+
+.image-container {
+  width: 100%;                  /* Ширина 100% от родителя */
+  max-width: 800px;             /* Максимальная ширина 800px */
+  margin: 0 auto;               /* Центрирование по горизонтали */
+  flex-grow: 1;                 /* Занимает все доступное пространство */
+  display: flex;                /* Flex-контейнер */
+  justify-content: center;      /* Центрирование по горизонтали */
+  align-items: center;          /* Центрирование по вертикали */
+}
+
+#random-image {
+  max-width: 100%;              /* Макс. ширина - 100% контейнера */
+  max-height: 70vh;             /* Макс. высота - 70% высоты экрана */
+  width: auto;                  /* Автоматическая ширина */
+  height: auto;                 /* Автоматическая высота */
+  object-fit: contain;          /* Сохраняет пропорции изображения */
+  display: block;               /* Блочное отображение */
+}
+
+.main-info {
+  font-size: 14px;               /* Размер шрифта */
+  color: #0B0B0B;                /* Почти черный текст */
+  font-weight: 500;              /* Жирность */
+}
+
+.detailed-info {
+  font-size: 14px;               /* Размер шрифта */
+  color: #ADC0F8;                /* Светло-голубой цвет текста */
+  font-weight: 400;              /* Жирность */
+}
+
+#drop-area {
+  border: 2px dashed #0060FF;    /* Рамка: 2px, пунктирная, серый цвет (#ccc) */
+  border-radius: 10px;           /* Скругление углов */
+  padding: 20px;                 /* Внутренний отступ (со всех сторон) */
+  text-align: center;            /* Выравнивание текста по центру */
+  height: 160px;                 /* Высота */
+}
+
+#drop-area.highlight {
+  border-color: #4CAF50;         /* Цвет рамки при подсветке (зелёный) */
+  background-color: #f0fff0;     /* Цвет фона при подсветке (светло-зелёный) */
+}
+
+#file-input {
+  display: none;                 /* Скрытие стандартного input[type="file"] */
+}
+
+.input-with-button {
+  position: relative;            /* Для абсолютного позиционирования кнопки внутри */
+}
+
+.text-input {
+  width: 100%;                   /* Занимает всю ширину родителя */
+  padding: 10px;                 /* Внутренние отступы */
+  padding-right: 90px;           /* Оставляем место для кнопки (ширина кнопки + отступы) */
+  box-sizing: border-box;        /* Учитываем padding в общей ширине */
+  border-radius: 13px;           /* Закругление углов */
+  height: 60px;                  /* Высота */
+  border: 1px solid #0060FF;     /* Синяя рамка */
+}
+
+.text-input:focus {
+    outline: none;               /* Убирает стандартное браузерное выделение */
+    border: 1px solid #0060FF;   /* Явно задаем синий цвет рамки */
+}
+
+.inner-button {
+  position: absolute;             /* Абсолютное позиционирование */
+  right: 15px;                    /* Отступ справа от границы input */
+  top: 15px;                      /* Отступ сверху от границы input */
+  width: 60px;                    /* Ширина */
+  height: 30px;                   /* Высота */
+}
+
+.custom-table {
+    width: 800px; /* Ширина таблицы */
+    border-collapse: collapse;
+    text-align: left; /* Выравнивание по левому краю */
+    vertical-align: middle; /* Выравнивание по вертикали */
+}
+
+.custom-table th, .custom-table td {
+    padding: 8px 12px;
+    border: 0px;
+    font-weight: normal;
+}
+
+.custom-table th {
+    font-size: 14px;
+}
+
+.first-column-content {
+    width: 315px;
+    display: flex;
+    gap: 15px;
+    font-size: 16px;
+}
+
+.middle-column-content {
+    width: 280px;
+    display: flex;
+    font-size: 14px;
+}
+
+.lust-column-content {
+    width: 100px;
+    display: flex;
+}
+
+.first-column-content img {
+    max-height: 30px;
+    max-width: 30px;
+}
+
+.clickable-image {
+    cursor: pointer;
+    max-height: 30px;
+    max-width: 30px;
+    transition: transform 0.2s;
+}
+
+.clickable-image:hover {
+    transform: scale(1.1);
+}
