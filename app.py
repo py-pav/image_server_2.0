@@ -1,12 +1,16 @@
 import cgi
 import json
 import logging
+import math
 import os
 import uuid
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Optional
 
 from PIL import Image
-from make_images_table import DOWNLOAD_PAGE_HEADER, get_hr_value
+
+from db_manager import PostgresManager, postgres_config
+from make_images_table import DOWNLOAD_PAGE_HEADER, create_pagination, get_hr_value
 
 # Configuration
 HOST, PORT = ('0.0.0.0', 5000)
@@ -47,13 +51,16 @@ def secure_filename(filename):
 
 
 class ImageServer(BaseHTTPRequestHandler):
+    db: Optional[PostgresManager] = None
+
     def do_GET(self):
         filepath = self.path[1:]
         if self.path == '/':
             self.serve_file('static/main.html', 'text/html')
             logging.info('Переход на главную страницу')
-        elif self.path == '/images':
-            self.serve_images_list()
+        elif self.path.startswith('/images-list'):
+            page_number = self._get_page_number()
+            self.serve_images_list(page_number=page_number)
             logging.info('Переход на страницу сохраненных изображений')
         elif self.path.startswith('/static/'):
             if os.path.exists(filepath):
@@ -61,10 +68,10 @@ class ImageServer(BaseHTTPRequestHandler):
                 content_type = {
                     '.css': 'text/css',
                     '.js': 'application/javascript',
-                    '.png': 'image/png',
-                    '.jpg': 'image/jpeg',
-                    '.jpeg': 'image/jpeg',
-                    '.gif': 'image/gif',
+                    '.png': 'images-list/png',
+                    '.jpg': 'images-list/jpeg',
+                    '.jpeg': 'images-list/jpeg',
+                    '.gif': 'images-list/gif',
                     '.html': 'text/html'
                 }.get(ext, 'application/octet-stream')
                 self.serve_file(filepath, content_type)
@@ -72,6 +79,15 @@ class ImageServer(BaseHTTPRequestHandler):
                     logging.info('Переход на страницу загрузки')
         else:
             self.send_error(404, 'Not Found')
+
+    def _get_page_number(self) -> int:
+        page_number = 1 if self.path == '/images-list' else int(self.path[18:])
+        all_records = self.db.show_table()
+        if not all_records:
+            return 1
+        if len(all_records) <= page_number * 10 - 10:
+            page_number -= 1
+        return page_number
 
     def do_POST(self):
         if self.path == '/upload':
@@ -113,12 +129,13 @@ class ImageServer(BaseHTTPRequestHandler):
                     return
 
                 # Generate unique filename
-                filename = file_item.filename
-                ext = filename.rsplit('.', 1)[1].lower()
-                filename = filename.replace(f'.{ext}', '').lower()
-                unique_filename = f'{uuid.uuid4().hex[:15]}_{filename}.{ext}'
-                filename = secure_filename(unique_filename)
-                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                original_name = file_item.filename
+                file_type = original_name.rsplit('.', 1)[1].lower()
+                filename = f'{uuid.uuid4().hex[:15]}.{file_type}'
+                size = round(len(file_data) / 1000, 1)
+                self.db.add_file(filename, original_name, size, file_type)
+
+                filepath = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
 
                 # Save file
                 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -143,7 +160,7 @@ class ImageServer(BaseHTTPRequestHandler):
                 response = {
                     'message': 'File uploaded successfully',
                     'filename': filename,
-                    'url': f"/images/{filename}",
+                    'url': f"/images-list/{filename}",
                     'host': self.headers.get('X-Forwarded-Host', self.headers['Host']),
                 }
                 self.wfile.write(json.dumps(response).encode('utf-8'))
@@ -159,16 +176,17 @@ class ImageServer(BaseHTTPRequestHandler):
         if self.path.startswith('/delete_image'):
             filename = self.path.split('/')[-1]
             filepath = os.path.join(UPLOAD_FOLDER, filename)
-
             try:
                 if os.path.exists(filepath):
+                    id_image = self.db.get_id_by_filename(filename)
+                    self.db.delete_by_id(id_image=id_image)
                     os.remove(filepath)
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
                     self.wfile.write(json.dumps({'success': True}).encode())
                     logging.info(f'Изображение {filename} удалено')
-                    self.serve_images_list()
+                    self.serve_images_list(page_number=1)
                 else:
                     self.send_error(404, 'File Not Found')
             except Exception as e:
@@ -186,20 +204,26 @@ class ImageServer(BaseHTTPRequestHandler):
         except FileNotFoundError:
             self.send_error(404, 'Not Found')
 
-    def serve_images_list(self):
+    def serve_images_list(self, page_number: int):
         try:
+            image_list = self.db.get_page_by_page_num(page_number=page_number)
             os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            files = [f for f in os.listdir(UPLOAD_FOLDER) if allowed_file(f)]
             html = DOWNLOAD_PAGE_HEADER
-            if not files:
-                html += '<p style="color: red; font-weight: bold;">FILES ARE MISSING</p>'
+            if not image_list:
+                html += '<p style="color: red; font-weight: bold;">НЕТ ЗАГРУЖЕННЫХ ИЗОБРАЖЕНИЙ</p>'
                 logging.info('Отсутствуют загруженные изображения')
             else:
+                pages_count = self.db.show_table()
+                pages_count = math.ceil(len(pages_count) / 10)
                 html += ('<table class="custom-table" id="resizableTable"><thead>'
-                         '<tr><th>Name</th><th>Url</th><th>Delete</th></tr></thead><tbody>')
-                for file in files:
-                    html += get_hr_value(file)
+                         '<tr><th>Name</th><th>Original Name</th><th>Size, kB</th><th>Uploaded at</th><th>Type</th>'
+                         '<th>Delete</th></tr></thead><tbody>')
+                for image in image_list:
+                    html += get_hr_value(image)
                 html += '</tbody></table>'
+                if pages_count > 1:
+                    html += create_pagination(page_number=page_number, pages_count=pages_count)
+
             html += '</body></html>'
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
@@ -216,7 +240,8 @@ class ImageServer(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps({"error": message}).encode('utf-8'))
 
 
-def run():
+def run(db_object):
+    ImageServer.db = db_object
     server_address = (HOST, PORT)
     httpd = HTTPServer(server_address, ImageServer)
     logging.info('Starting server...')
@@ -225,4 +250,6 @@ def run():
 
 if __name__ == '__main__':
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    run()
+    with PostgresManager(postgres_config) as pm:
+        pm.create_table()
+        run(pm)

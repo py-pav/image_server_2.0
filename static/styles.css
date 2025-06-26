@@ -71,12 +71,12 @@ button:active {
 .navigation-links {
   display: flex;                 /* Горизонтальное расположение */
   gap: 15px;                     /* Расстояние между ссылками */
+  font-size: 20px;               /* Размер шрифта 20 пикселей */
+  font-weight: 700;              /* Жирное начертание шрифта */
 }
 
 .navigation-links a {
   text-decoration: none;         /* Убирает подчеркивание ссылки */
-  font-size: 20px;               /* Размер шрифта 20 пикселей */
-  font-weight: 700;              /* Жирное начертание шрифта */
 }
 
 .image-container {
@@ -155,7 +155,7 @@ button:active {
 }
 
 .custom-table {
-    width: 800px; /* Ширина таблицы */
+    width: 1000px; /* Ширина таблицы */
     border-collapse: collapse;
     text-align: left; /* Выравнивание по левому краю */
     vertical-align: middle; /* Выравнивание по вертикали */
@@ -169,24 +169,27 @@ button:active {
 
 .custom-table th {
     font-size: 14px;
+    font-weight: bold;
+
 }
 
 .first-column-content {
-    width: 315px;
+    width: 20%;
     display: flex;
     gap: 15px;
     font-size: 16px;
 }
 
 .middle-column-content {
-    width: 280px;
     display: flex;
     font-size: 14px;
+    text-align: center;
 }
 
 .lust-column-content {
-    width: 100px;
+    width: 50px;
     display: flex;
+    text-align: center;
 }
 
 .first-column-content img {

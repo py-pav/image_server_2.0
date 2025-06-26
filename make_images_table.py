@@ -43,24 +43,52 @@ DOWNLOAD_PAGE_HEADER = f'''
 '''
 
 
-def get_hr_value(file_name: str) -> str:
+def get_hr_value(image: tuple) -> str:
+    _, file_name, original_name, size, uploaded_date, file_type = image
     result = f'''
         <tr>
             <td>
                 <div class="first-column-content">
                     <img src="static/pictures/vector.png" alt="vector">
-                    <span>{file_name[file_name.find('_') + 1:]}</span>                                      
+                    <a href="/images/{file_name}" target="_blank">{file_name}</a>                                     
                 </div>
             </td>
-            <td>
-                <div class="middle-column-content"><a href="/images/{file_name}" target="_blank">{file_name}</a></div>
-            </td>
+            <td><div class="middle-column-content">{original_name}</div></td>
+            <td><div class="middle-column-content">{size}</div></td>
+            <td><div class="middle-column-content">{uploaded_date.strftime("%Y-%m-%d %H:%M:%S")}</div></td>
+            <td><div class="middle-column-content">{file_type}</div></td>
             <td>
                 <div class="lust-column-content">
                     <img src="static/pictures/delete.png" alt="delete" class="clickable-image"
-                         onclick="deleteImage('{file_name}')">
+                    onclick="deleteImage('{file_name}')">
                 </div>
             </td>
         </tr>    
+    '''
+    return result
+
+
+def create_pagination(page_number: int, pages_count: int) -> str:
+    active_btn = 'style="color: #0060FF; cursor: pointer;" onclick="window.location.href='
+    not_active_btn = '<a style="color: #ADC0F8;">'
+    page_link = '/images-list?page='
+    next_link, previous_link = f'{page_link}{page_number + 1}', f'{page_link}{page_number - 1}'
+
+    if page_number == 1:
+        previous_page = f'{not_active_btn}'
+        next_page = f'''<a href="{next_link}" {active_btn}='{next_link}'">'''
+    elif page_number == pages_count:
+        previous_page = f'''<a href="{previous_link}" {active_btn}='{previous_link}'">'''
+        next_page = f'{not_active_btn}'
+    else:
+        previous_page = f'''<a href="{previous_link}" {active_btn}='{previous_link}'">'''
+        next_page = f'''<a href="{next_link}" {active_btn}='{next_link}'">'''
+    result = f'''
+        <div class="navigation-links" style="margin-top: 50px; margin-bottom: 50px;">
+            {previous_page}Previous Page</a>                      
+            <div>{page_number}</div>
+            <div>(total {pages_count})</div>
+            {next_page}Next Page</a>  
+        </div>
     '''
     return result
